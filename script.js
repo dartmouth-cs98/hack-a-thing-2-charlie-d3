@@ -1,6 +1,7 @@
 var data = [13, 37, 66, 21, 56, 43];
 document.addEventListener("DOMContentLoaded", function(e) {
     chart1(data);
+    chart2(data);
     d3.select("#submit")
     .on("click", function(){
         data = []
@@ -12,6 +13,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
         }
         console.log(data);
         updateBar(data);
+        // updatePie(data);
+        d3.select("#box2").selectAll("svg").remove();
+        chart2(data);
     })
 
    });
@@ -84,4 +88,75 @@ function updateBar(data){
     }
     
   }
+
+function chart2(data){
+    var width = 600;
+    var height = 430;
+    var radius = 150;
+
+var svg = d3.select("#box2")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+
+
+var color = d3.scaleOrdinal()
+  .domain(data)
+  .range(["#86f078", "#78f0be", "#78c2f0", "#a278f0", "#f078a2", "#f0b878"])
+
+// Compute the position of each group on the pie:
+var pie = d3.pie()
+  .value(function(d) {return d.value; })
+var data_ready = pie(d3.entries(data))
+
+svg
+  .selectAll('pie')
+  .data(data_ready)
+  .enter()
+  .append('path')
+  .attr('d', d3.arc()
+    .innerRadius(0)
+    .outerRadius(radius)
+  )
+  .attr('fill', function(d){ return(color(d.data.key)) })
+  .attr("stroke", "white")
+  .style("stroke-width", "1.5px")
+
+  svg.append("g")
+  .attr("transform", "translate(" + (width / 2 - 120) + "," + 20 + ")")
+  .append("text")
+  .text("Pie Chart")
+  .attr("font-family", "Georgia")
+  .attr("class", "title")
+}
     
+function updatePie(data){
+    //Update pie slices 
+    var svg = d3.select("#box2");
+    var color = d3.scaleOrdinal()
+    .domain(data)
+    .range(["#86f078", "#78f0be", "#78c2f0", "#a278f0", "#f078a2", "#f0b878"])
+  
+  // Compute the position of each group on the pie:
+  var pie = d3.pie()
+    .value(function(d) {return d.value; })
+  var data_ready = pie(d3.entries(data))
+svg.select("path")
+  .transition()
+  .duration(2000)
+  .data(data_ready)
+  .enter()
+  .append('path')
+  .attr('d', d3.arc()
+    .innerRadius(0)
+    .outerRadius(radius)
+  )
+  .attr('fill', function(d){ return(color(d.data.key)) })
+  .attr("stroke", "white")
+  .style("stroke-width", "1.5px")
+    
+    
+  }
